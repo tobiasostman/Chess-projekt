@@ -8,6 +8,6 @@ class ChessApplicationTests {
 
 	@Test
 	void contextLoads() {
-	}
 
+	}
 }

@@ -22,7 +22,9 @@ public abstract class ChessPiece {
 
     public abstract String getSymbol();
 
-    public PieceType getPieceType() { return pieceType; }
+    public PieceType getPieceType() {
+        return pieceType;
+    }
 
     public Player getPlayer() {
         return player;
@@ -39,11 +41,15 @@ public abstract class ChessPiece {
      * I preferred to keep this logic tightly coupled to the pieces instead of the board,
      * since that makes the separation of logic easier.
      *
-     * @param chessboard chessboard
+     * @param chessboard  chessboard
      * @param destination destination
      * @return true if piece can move to the destination
      */
     public abstract boolean canMove(final Chessboard chessboard, final Coordinates destination);
+
+    public abstract void takePiece(final Chessboard chessboard, final Coordinates destination);
+
+    public abstract void movePiece(final Chessboard chessboard, final Coordinates destination);
 
     @Override
     public boolean equals(Object o) {

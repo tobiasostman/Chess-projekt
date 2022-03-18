@@ -2,6 +2,7 @@ package ax.ha.tdd.chess.engine;
 
 import ax.ha.tdd.chess.engine.pieces.ChessPiece;
 import ax.ha.tdd.chess.engine.pieces.ChessPieceStub;
+import ax.ha.tdd.chess.engine.pieces.Pawn;
 import ax.ha.tdd.chess.engine.pieces.PieceType;
 
 import java.util.Iterator;
@@ -17,10 +18,10 @@ public class Chessboard implements Iterable<ChessPiece[]> {
     public static Chessboard startingBoard() {
         final Chessboard chessboard = new Chessboard();
 
-        chessboard.withMirroredPiece(PieceType.PAWN, List.of(0,1,2,3,4,5,6,7), 1)
-                .withMirroredPiece(PieceType.ROOK, List.of(0,7), 0)
-                .withMirroredPiece(PieceType.KNIGHT, List.of(1,6), 0)
-                .withMirroredPiece(PieceType.BISHOP, List.of(2,5), 0)
+        chessboard.withMirroredPiece(PieceType.PAWN, List.of(0, 1, 2, 3, 4, 5, 6, 7), 1)
+                .withMirroredPiece(PieceType.ROOK, List.of(0, 7), 0)
+                .withMirroredPiece(PieceType.KNIGHT, List.of(1, 6), 0)
+                .withMirroredPiece(PieceType.BISHOP, List.of(2, 5), 0)
                 .withMirroredPiece(PieceType.QUEEN, List.of(3), 0)
                 .withMirroredPiece(PieceType.KING, List.of(4), 0);
         return chessboard;
@@ -30,8 +31,17 @@ public class Chessboard implements Iterable<ChessPiece[]> {
         return board[coordinates.getY()][coordinates.getX()];
     }
 
+    public boolean tileHasPieceOnIt(Coordinates position) {
+        if (board[position.getY()][position.getX()] == null) return false;
+        return true;
+    }
+
     public void addPiece(final ChessPiece chessPiece) {
         board[chessPiece.getLocation().getY()][chessPiece.getLocation().getX()] = chessPiece;
+    }
+
+    public void removePiece(final ChessPiece chessPiece) {
+        board[chessPiece.getLocation().getY()][chessPiece.getLocation().getX()] = null;
     }
 
     /**
@@ -39,16 +49,21 @@ public class Chessboard implements Iterable<ChessPiece[]> {
      * Basically mirrors all added pieces for both players.
      * When all pieces has been implemented, this should be replaced with the proper implementations.
      *
-     * @param pieceType pieceType
+     * @param pieceType    pieceType
      * @param xCoordinates xCoordinates
-     * @param yCoordinate yCoordinateOffset
+     * @param yCoordinate  yCoordinateOffset
      * @return itself, like a builder pattern
      */
     private Chessboard withMirroredPiece(final PieceType pieceType,
                                          final List<Integer> xCoordinates, final int yCoordinate) {
         xCoordinates.forEach(xCoordinate -> {
-            addPiece(new ChessPieceStub(pieceType, Player.BLACK, new Coordinates(xCoordinate, yCoordinate)));
-            addPiece(new ChessPieceStub(pieceType, Player.WHITE, new Coordinates(xCoordinate, 7 - yCoordinate)));
+            if (pieceType == PieceType.PAWN) {
+                addPiece(new Pawn(pieceType, Player.BLACK, new Coordinates(xCoordinate, yCoordinate)));
+                addPiece(new Pawn(pieceType, Player.WHITE, new Coordinates(xCoordinate, 7 - yCoordinate)));
+            } else {
+                addPiece(new ChessPieceStub(pieceType, Player.BLACK, new Coordinates(xCoordinate, yCoordinate)));
+                addPiece(new ChessPieceStub(pieceType, Player.WHITE, new Coordinates(xCoordinate, 7 - yCoordinate)));
+            }
         });
         return this;
     }

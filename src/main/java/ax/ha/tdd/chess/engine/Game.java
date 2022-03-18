@@ -1,5 +1,7 @@
 package ax.ha.tdd.chess.engine;
 
+import ax.ha.tdd.chess.engine.pieces.ChessPiece;
+
 public class Game {
 
     Chessboard board = Chessboard.startingBoard();
@@ -29,5 +31,22 @@ public class Game {
         //TODO this should trigger your move logic.
         isNewGame = false;
         System.out.println("Player tried to perform move: " + move);
+        String[] moves = move.split("-");
+
+        Coordinates startPos = new Coordinates(moves[0]);
+        Coordinates endPos = new Coordinates(moves[1]);
+
+        ChessPiece piece = board.getPiece(startPos);
+
+        boolean canMove = piece.canMove(board, endPos);
+
+        if (canMove && board.tileHasPieceOnIt(endPos)) {
+            piece.takePiece(board, endPos);
+        }
+        if (canMove && !board.tileHasPieceOnIt(endPos)) {
+            piece.movePiece(board, endPos);
+        } else {
+            System.out.println("invalid move");
+        }
     }
 }
