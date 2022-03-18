@@ -42,8 +42,7 @@ public class Game {
 
         if (canMove && board.tileHasPieceOnIt(endPos)) {
             piece.takePiece(board, endPos);
-        }
-        if (canMove && !board.tileHasPieceOnIt(endPos)) {
+        } else if (canMove && !board.tileHasPieceOnIt(endPos)) {
             piece.movePiece(board, endPos);
         } else {
             System.out.println("invalid move");

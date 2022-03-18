@@ -100,11 +100,7 @@ public class Pawn extends ChessPiece {
         }
         if (isPieceInTheWay(chessboard, destination)) return false;
 
-        if (isMoveLegal(destination)) {
-            movePiece(chessboard, destination);
-            return true;
-        }
-        return false;
+        return isMoveLegal(destination);
     }
 
     @Override
