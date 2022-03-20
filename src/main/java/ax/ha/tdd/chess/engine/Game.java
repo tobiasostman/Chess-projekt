@@ -40,7 +40,7 @@ public class Game {
 
         boolean canMove = piece.canMove(board, endPos);
 
-        if (canMove && board.tileHasPieceOnIt(endPos)) {
+        if (canMove && board.tileHasPieceOnIt(endPos) && !piece.isTakingPieceFriendly(board, endPos)) {
             piece.takePiece(board, endPos);
         } else if (canMove && !board.tileHasPieceOnIt(endPos)) {
             piece.movePiece(board, endPos);

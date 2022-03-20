@@ -1,9 +1,6 @@
 package ax.ha.tdd.chess.engine;
 
-import ax.ha.tdd.chess.engine.pieces.ChessPiece;
-import ax.ha.tdd.chess.engine.pieces.ChessPieceStub;
-import ax.ha.tdd.chess.engine.pieces.Pawn;
-import ax.ha.tdd.chess.engine.pieces.PieceType;
+import ax.ha.tdd.chess.engine.pieces.*;
 
 import java.util.Iterator;
 import java.util.List;
@@ -60,6 +57,9 @@ public class Chessboard implements Iterable<ChessPiece[]> {
             if (pieceType == PieceType.PAWN) {
                 addPiece(new Pawn(pieceType, Player.BLACK, new Coordinates(xCoordinate, yCoordinate)));
                 addPiece(new Pawn(pieceType, Player.WHITE, new Coordinates(xCoordinate, 7 - yCoordinate)));
+            } else if (pieceType == PieceType.ROOK) {
+                addPiece(new Rook(pieceType, Player.BLACK, new Coordinates(xCoordinate, yCoordinate)));
+                addPiece(new Rook(pieceType, Player.WHITE, new Coordinates(xCoordinate, 7 - yCoordinate)));
             } else {
                 addPiece(new ChessPieceStub(pieceType, Player.BLACK, new Coordinates(xCoordinate, yCoordinate)));
                 addPiece(new ChessPieceStub(pieceType, Player.WHITE, new Coordinates(xCoordinate, 7 - yCoordinate)));

@@ -93,6 +93,7 @@ public class Pawn extends ChessPiece {
 
         if (this.location.getX() != destination.getX()) {
             if (isTakingPieceLegal(chessboard, destination)) {
+                this.hasMoved = true;
                 return true;
             } else {
                 return false;
@@ -100,22 +101,10 @@ public class Pawn extends ChessPiece {
         }
         if (isPieceInTheWay(chessboard, destination)) return false;
 
-        return isMoveLegal(destination);
-    }
-
-    @Override
-    public void takePiece(Chessboard chessboard, Coordinates destination) {
-        chessboard.removePiece(chessboard.getPiece(destination));
-        chessboard.removePiece(this);
-        this.location = destination;
-        chessboard.addPiece(this);
-    }
-
-    @Override
-    public void movePiece(Chessboard chessboard, Coordinates destination) {
-        chessboard.removePiece(this);
-        this.location = destination;
-        chessboard.addPiece(this);
-        this.hasMoved = true;
+        if (isMoveLegal(destination)) {
+            this.hasMoved = true;
+            return true;
+        }
+        return false;
     }
 }

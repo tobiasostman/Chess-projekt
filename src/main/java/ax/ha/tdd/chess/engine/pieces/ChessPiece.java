@@ -47,9 +47,27 @@ public abstract class ChessPiece {
      */
     public abstract boolean canMove(final Chessboard chessboard, final Coordinates destination);
 
-    public abstract void takePiece(final Chessboard chessboard, final Coordinates destination);
+    public void takePiece(final Chessboard chessboard, final Coordinates destination) {
+        chessboard.removePiece(chessboard.getPiece(destination));
+        chessboard.removePiece(this);
+        this.location = destination;
+        chessboard.addPiece(this);
+    }
 
-    public abstract void movePiece(final Chessboard chessboard, final Coordinates destination);
+    public boolean isTakingPieceFriendly(final Chessboard chessboard, final Coordinates destination) {
+        if (chessboard.tileHasPieceOnIt(this.location) && chessboard.tileHasPieceOnIt(destination)) {
+            if (Objects.equals(chessboard.getPiece(this.location).getPlayer().getSymbol(), chessboard.getPiece(destination).getPlayer().getSymbol())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void movePiece(final Chessboard chessboard, final Coordinates destination) {
+        chessboard.removePiece(this);
+        this.location = destination;
+        chessboard.addPiece(this);
+    }
 
     @Override
     public boolean equals(Object o) {
