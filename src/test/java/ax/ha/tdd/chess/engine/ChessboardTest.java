@@ -1,7 +1,8 @@
 package ax.ha.tdd.chess.engine;
 
-import ax.ha.tdd.chess.engine.pieces.ChessPieceStub;
+import ax.ha.tdd.chess.engine.pieces.King;
 import ax.ha.tdd.chess.engine.pieces.PieceType;
+import ax.ha.tdd.chess.engine.pieces.Queen;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -76,14 +77,14 @@ public class ChessboardTest {
     @Test
     public void fullboard_Kings_isInCorrectSpot() {
         final Chessboard chessboard = Chessboard.startingBoard();
-        Assertions.assertEquals(new ChessPieceStub(PieceType.KING, Player.BLACK), chessboard.getPiece(new Coordinates(4, 0)));
-        Assertions.assertEquals(new ChessPieceStub(PieceType.KING, Player.WHITE), chessboard.getPiece(new Coordinates(4, 7)));
+        Assertions.assertEquals(new King(PieceType.KING, Player.BLACK, new Coordinates("e8")), chessboard.getPiece(new Coordinates(4, 0)));
+        Assertions.assertEquals(new King(PieceType.KING, Player.WHITE, new Coordinates("e1")), chessboard.getPiece(new Coordinates(4, 7)));
     }
 
     @Test
     public void fullboard_Queens_isInCorrectSpot() {
         final Chessboard chessboard = Chessboard.startingBoard();
-        Assertions.assertEquals(new ChessPieceStub(PieceType.QUEEN, Player.BLACK), chessboard.getPiece(new Coordinates(3, 0)));
-        Assertions.assertEquals(new ChessPieceStub(PieceType.QUEEN, Player.WHITE), chessboard.getPiece(new Coordinates(3, 7)));
+        Assertions.assertEquals(new Queen(PieceType.QUEEN, Player.BLACK, new Coordinates("d8")), chessboard.getPiece(new Coordinates(3, 0)));
+        Assertions.assertEquals(new Queen(PieceType.QUEEN, Player.WHITE, new Coordinates("d1")), chessboard.getPiece(new Coordinates(3, 7)));
     }
 }

@@ -11,7 +11,7 @@ public class Rook extends ChessPiece {
 
     @Override
     public String getSymbol() {
-        return null;
+        return "R";
     }
 
     public boolean isPieceInTheWay(Chessboard chessboard, Coordinates destination) {

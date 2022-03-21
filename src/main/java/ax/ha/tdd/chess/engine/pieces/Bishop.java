@@ -12,7 +12,7 @@ public class Bishop extends ChessPiece {
 
     @Override
     public String getSymbol() {
-        return null;
+        return "B";
     }
 
     @Override
