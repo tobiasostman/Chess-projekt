@@ -70,8 +70,8 @@ public class Chessboard implements Iterable<ChessPiece[]> {
                 addPiece(new Queen(pieceType, Player.BLACK, new Coordinates(xCoordinate, yCoordinate)));
                 addPiece(new Queen(pieceType, Player.WHITE, new Coordinates(xCoordinate, 7 - yCoordinate)));
             } else {
-                addPiece(new ChessPieceStub(pieceType, Player.BLACK, new Coordinates(xCoordinate, yCoordinate)));
-                addPiece(new ChessPieceStub(pieceType, Player.WHITE, new Coordinates(xCoordinate, 7 - yCoordinate)));
+                addPiece(new King(pieceType, Player.BLACK, new Coordinates(xCoordinate, yCoordinate)));
+                addPiece(new King(pieceType, Player.WHITE, new Coordinates(xCoordinate, 7 - yCoordinate)));
             }
         });
         return this;
