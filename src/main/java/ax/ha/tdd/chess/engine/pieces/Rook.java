@@ -5,6 +5,9 @@ import ax.ha.tdd.chess.engine.Coordinates;
 import ax.ha.tdd.chess.engine.Player;
 
 public class Rook extends ChessPiece {
+
+    boolean hasMoved = false;
+
     public Rook(PieceType pieceType, Player player, Coordinates location) {
         super(pieceType, player, location);
     }
@@ -59,6 +62,15 @@ public class Rook extends ChessPiece {
 
         if (this.location.getX() != destination.getX() && this.location.getY() != destination.getY()) return false;
 
-        return !isPieceInTheWay(chessboard, destination);
+        if (!isPieceInTheWay(chessboard, destination)) {
+            hasMoved = true;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean getHasMoved() {
+        return hasMoved;
     }
 }
