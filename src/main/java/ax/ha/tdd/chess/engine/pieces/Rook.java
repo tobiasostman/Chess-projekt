@@ -29,11 +29,11 @@ public class Rook extends ChessPiece {
             for (int i = startPos - 1; i != endPos; i--) {
                 if (isXMovement) {
                     if (chessboard.tileHasPieceOnIt(new Coordinates(i, this.location.getY()))) {
-                        return false;
+                        return true;
                     }
                 } else {
                     if (chessboard.tileHasPieceOnIt(new Coordinates(this.location.getX(), i))) {
-                        return false;
+                        return true;
                     }
                 }
 
@@ -42,20 +42,23 @@ public class Rook extends ChessPiece {
             for (int i = startPos + 1; i != endPos; i++) {
                 if (isXMovement) {
                     if (chessboard.tileHasPieceOnIt(new Coordinates(i, this.location.getY()))) {
-                        return false;
+                        return true;
                     }
                 } else {
                     if (chessboard.tileHasPieceOnIt(new Coordinates(this.location.getX(), i))) {
-                        return false;
+                        return true;
                     }
                 }
             }
         }
-        return true;
+        return false;
     }
 
     @Override
     public boolean canMove(Chessboard chessboard, Coordinates destination) {
-        return isPieceInTheWay(chessboard, destination);
+
+        if (this.location.getX() != destination.getX() && this.location.getY() != destination.getY()) return false;
+
+        return !isPieceInTheWay(chessboard, destination);
     }
 }

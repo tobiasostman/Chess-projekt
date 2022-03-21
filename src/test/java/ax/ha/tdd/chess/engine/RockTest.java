@@ -98,4 +98,24 @@ public class RockTest {
         Assertions.assertEquals(PieceType.ROOK, game.board.getPiece(isAtG8).getPieceType());
         Assertions.assertEquals(Player.WHITE.getSymbol(), game.board.getPiece(isAtG8).getPlayer().getSymbol());
     }
+
+    @Test
+    @DisplayName("rook should only move vertically and horizontally")
+    public void rookShouldOnlyMoveVerticallyAndHorizontally() {
+        game.board.removePiece(game.board.getPiece(new Coordinates("h2")));
+        game.board.removePiece(game.board.getPiece(new Coordinates("a2")));
+
+        game.move("h1-f3");
+        Coordinates isAtH1 = new Coordinates("h1");
+        Assertions.assertEquals(PieceType.ROOK, game.board.getPiece(isAtH1).getPieceType());
+
+        game.move("a1-c3");
+        Assertions.assertEquals(PieceType.ROOK, game.board.getPiece(isAtH1).getPieceType());
+
+        game.move("a1-b5");
+        Assertions.assertEquals(PieceType.ROOK, game.board.getPiece(isAtH1).getPieceType());
+
+        game.move("h1-e5");
+        Assertions.assertEquals(PieceType.ROOK, game.board.getPiece(isAtH1).getPieceType());
+    }
 }
