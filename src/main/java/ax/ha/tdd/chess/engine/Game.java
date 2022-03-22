@@ -5,14 +5,17 @@ import ax.ha.tdd.chess.engine.pieces.King;
 import ax.ha.tdd.chess.engine.pieces.PieceType;
 import ax.ha.tdd.chess.engine.pieces.Rook;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class Game {
 
     Chessboard board = Chessboard.startingBoard();
-
+    //Feel free to delete this stuff. Just for initial testing.
+    boolean isNewGame = true;
+    GameState gameState = GameState.Playing;
+    Player player = Player.WHITE;
+    Coordinates checkedPlayerKingCoordinates;
+    boolean isTesting = false;
     Map<String, Coordinates> rookAndKingCoordinates = new HashMap<>() {
         {
             put("WK", new Coordinates("e1"));
@@ -23,7 +26,6 @@ public class Game {
             put("BRR", new Coordinates("h8"));
         }
     };
-
     Map<String, Coordinates> castledRookAndKingCoordinates = new HashMap<>() {
         {
             put("WKL", new Coordinates("c1"));
@@ -37,12 +39,18 @@ public class Game {
         }
     };
 
-    //Feel free to delete this stuff. Just for initial testing.
-    boolean isNewGame = true;
+    public Game() {
+
+    }
+
+    public Game(boolean isTesting) {
+        this.isTesting = isTesting;
+    }
 
     public Player getPlayerToMove() {
         //TODO this should reflect the current state.
-        return Player.WHITE;
+        if (isTesting) return Player.WHITE;
+        return player;
     }
 
     public Chessboard getBoard() {
@@ -63,12 +71,24 @@ public class Game {
         isNewGame = false;
         System.out.println("Player tried to perform move: " + move);
         String[] moves = move.split("-");
+        if (GameState.Playing == gameState) {
+            gameStateIsPlaying(move, moves);
+        } else if (GameState.Check == gameState) {
 
+        } else {
+            //TODO add player wins
+            System.out.println("White wins");
+        }
+
+
+    }
+
+    private void gameStateIsPlaying(String move, String[] moves) {
         if (move.startsWith("o") || move.startsWith("O")) {
             //castling
-
             if (isCastlingLegal(move)) {
                 castleKing(move);
+                updatePlayer();
             } else {
                 System.out.println("Cannot castle right now");
             }
@@ -84,12 +104,18 @@ public class Game {
 
             if (canMove && board.tileHasPieceOnIt(endPos) && !piece.isTakingPieceFriendly(board, endPos)) {
                 piece.takePiece(board, endPos);
+                updatePlayer();
             } else if (canMove && !board.tileHasPieceOnIt(endPos)) {
                 piece.movePiece(board, endPos);
+                updatePlayer();
             } else {
                 System.out.println("invalid move");
             }
         }
+    }
+
+    private void gameStateIsCheck() {
+
     }
 
     private void castleKing(String move) {
@@ -119,28 +145,82 @@ public class Game {
     private boolean isCastlingLegal(String move) {
         if (getPlayerToMove() == Player.WHITE) {
             if (move.equalsIgnoreCase("o-o-o")) {
-                if (board.tileHasPieceOnIt(new Coordinates("e1")) && board.tileHasPieceOnIt(new Coordinates("a1"))) {
-                    if (board.getPiece(new Coordinates("e1")).getPieceType() != PieceType.KING) return false;
-                    if (board.getPiece(new Coordinates("a1")).getPieceType() != PieceType.ROOK) return false;
-                    if (board.tileHasPieceOnIt(new Coordinates("d1"))) return false;
-                    if (board.tileHasPieceOnIt(new Coordinates("c1"))) return false;
-                    if (board.tileHasPieceOnIt(new Coordinates("b1"))) return false;
-                    return !canAnyPieceMoveHere(getPlayerToMove(), new Coordinates("c1"));
-                }
+                return castleQueenSide(new Coordinates("d1"), new Coordinates("c1"), new Coordinates("b1"));
             } else {
-                if (board.tileHasPieceOnIt(new Coordinates("e1")) && board.tileHasPieceOnIt(new Coordinates("h1"))) {
-                    if (board.getPiece(new Coordinates("e1")).getPieceType() != PieceType.KING) return false;
-                    if (board.getPiece(new Coordinates("h1")).getPieceType() != PieceType.ROOK) return false;
-                    if (board.tileHasPieceOnIt(new Coordinates("f1"))) return false;
-                    if (board.tileHasPieceOnIt(new Coordinates("g1"))) return false;
-                    return !canAnyPieceMoveHere(getPlayerToMove(), new Coordinates("c1"));
+                return castleKingSide(new Coordinates("f1"), new Coordinates("g1"));
+            }
+        } else {
+            if (move.equalsIgnoreCase("o-o-o")) {
+                return castleQueenSide(new Coordinates("d8"), new Coordinates("c8"), new Coordinates("b8"));
+            } else {
+                return castleKingSide(new Coordinates("f8"), new Coordinates("g8"));
+            }
+        }
+    }
+
+    private boolean castleKingSide(Coordinates bishop, Coordinates knight) {
+        Coordinates king = rookAndKingCoordinates.get(getPlayerToMove().getSymbol() + "K");
+        Coordinates rook = rookAndKingCoordinates.get(getPlayerToMove().getSymbol() + "RR");
+
+        if (board.tileHasPieceOnIt(king) && board.tileHasPieceOnIt(rook)) {
+            if (board.getPiece(king).getPieceType() != PieceType.KING) return false;
+            if (board.getPiece(rook).getPieceType() != PieceType.ROOK) return false;
+            if (board.tileHasPieceOnIt(bishop)) return false;
+            if (board.tileHasPieceOnIt(knight)) return false;
+
+            List<Coordinates> positionsToCheck = new ArrayList<>() {
+                {
+                    add(bishop);
+                    add(knight);
+                    add(castledRookAndKingCoordinates.get(getPlayerToMove().getSymbol() + "KR"));
+                    add(castledRookAndKingCoordinates.get(getPlayerToMove().getSymbol() + "RR"));
+                }
+            };
+            for (Coordinates coordinates : positionsToCheck) {
+                boolean isLegal = canAnyPieceMoveHere(getPlayerToMove(), coordinates);
+                if (isLegal) {
+                    return false;
                 }
             }
+            return true;
         }
         return false;
     }
 
-    private boolean canAnyPieceMoveHere(Player currentPlayer, Coordinates kingNewPosition) {
+    private boolean castleQueenSide(Coordinates queen, Coordinates bishop, Coordinates knight) {
+        Coordinates king = rookAndKingCoordinates.get(getPlayerToMove().getSymbol() + "K");
+        Coordinates rook = rookAndKingCoordinates.get(getPlayerToMove().getSymbol() + "RL");
+        if (board.tileHasPieceOnIt(king) && board.tileHasPieceOnIt(rook)) {
+            if (board.getPiece(king).getPieceType() != PieceType.KING)
+                return false;
+            if (board.getPiece(rook).getPieceType() != PieceType.ROOK)
+                return false;
+            if (board.tileHasPieceOnIt(queen)) return false;
+            if (board.tileHasPieceOnIt(bishop)) return false;
+            if (board.tileHasPieceOnIt(knight)) return false;
+            List<Coordinates> positionsToCheck = new ArrayList<>() {
+                {
+                    add(queen);
+                    add(bishop);
+                    add(knight);
+                    add(castledRookAndKingCoordinates.get(getPlayerToMove().getSymbol() + "KL"));
+                    add(castledRookAndKingCoordinates.get(getPlayerToMove().getSymbol() + "RL"));
+                }
+            };
+            for (Coordinates coordinates : positionsToCheck) {
+                boolean isLegal = canAnyPieceMoveHere(getPlayerToMove(), coordinates);
+                if (isLegal) {
+                    return false;
+                }
+            }
+            return true;
+
+        }
+        return false;
+    }
+
+
+    private boolean canAnyPieceMoveHere(Player currentPlayer, Coordinates position) {
 
         for (int x = 0; x != 8; x++) {
             for (int y = 0; y != 8; y++) {
@@ -148,7 +228,7 @@ public class Game {
                 if (board.tileHasPieceOnIt(coordinates)) {
                     ChessPiece piece = board.getPiece(coordinates);
                     if (!Objects.equals(piece.getPlayer().getSymbol(), currentPlayer.getSymbol())) {
-                        if (piece.canMove(board, kingNewPosition)) {
+                        if (piece.canMove(board, position)) {
                             return true;
                         }
                     }
@@ -156,5 +236,52 @@ public class Game {
             }
         }
         return false;
+    }
+
+    private boolean isEnemyInCheck(ChessPiece piece) {
+        Coordinates kingCoords = null;
+        for (int x = 0; x != 8; x++) {
+            for (int y = 0; y != 8; y++) {
+                Coordinates coordinates = new Coordinates(x, y);
+                if (board.tileHasPieceOnIt(coordinates)) {
+                    if (board.getPiece(coordinates).getPieceType() == PieceType.KING && board.getPiece(coordinates).getPlayer() != player) {
+                        kingCoords = coordinates;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (piece.canMove(board, kingCoords)) {
+            checkedPlayerKingCoordinates = kingCoords;
+
+            return true;
+        }
+        for (int x = 0; x != 8; x++) {
+            for (int y = 0; y != 8; y++) {
+                Coordinates coordinates = new Coordinates(x, y);
+                if (board.tileHasPieceOnIt(coordinates)) {
+                    ChessPiece chessPiece = board.getPiece(coordinates);
+                    if (chessPiece.canMove(board, kingCoords)) {
+                        checkedPlayerKingCoordinates = kingCoords;
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private void getValidKingMoves() {
+        King king = (King) board.getPiece(checkedPlayerKingCoordinates);
+
+    }
+
+    private void updatePlayer() {
+        if (Player.WHITE == player) {
+            player = Player.BLACK;
+        } else {
+            player = Player.WHITE;
+        }
     }
 }

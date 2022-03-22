@@ -9,7 +9,7 @@ public class KingTest {
 
     @BeforeEach
     public void init() {
-        game = new Game();
+        game = new Game(true);
         game.board.removePiece(game.board.getPiece(new Coordinates("d2")));
         game.board.removePiece(game.board.getPiece(new Coordinates("d1")));
         game.board.removePiece(game.board.getPiece(new Coordinates("e2")));
