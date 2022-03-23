@@ -9,7 +9,7 @@ public class RockTest {
 
     @BeforeEach
     public void init() {
-        game = new Game();
+        game = new Game(true);
     }
 
     @AfterEach

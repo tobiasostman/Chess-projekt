@@ -1,5 +1,6 @@
 package ax.ha.tdd.chess.engine;
 
+import ax.ha.tdd.chess.engine.pieces.PieceType;
 import org.junit.jupiter.api.*;
 
 public class GameTest {
@@ -87,5 +88,19 @@ public class GameTest {
         Assertions.assertEquals(Player.WHITE, game.getPlayerToMove());
         game.move("b2-b3");
         Assertions.assertEquals(Player.BLACK, game.getPlayerToMove());
+    }
+
+    @Test
+    @DisplayName("white should only be able to move white pieces")
+    public void whiteShouldOnlyMoveWhitePieces() {
+        Assertions.assertEquals(Player.WHITE, game.getPlayerToMove());
+        game.move("d7-d5");
+        Coordinates isAtD7 = new Coordinates("d7");
+        Assertions.assertEquals(PieceType.PAWN, game.board.getPiece(isAtD7).getPieceType());
+        game.move("d2-d4");
+        Assertions.assertEquals(Player.BLACK, game.getPlayerToMove());
+        game.move("c2-c4");
+        Coordinates isAtC2 = new Coordinates("c2");
+        Assertions.assertEquals(PieceType.PAWN, game.board.getPiece(isAtC2).getPieceType());
     }
 }

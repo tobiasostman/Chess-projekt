@@ -9,7 +9,7 @@ public class PawnTest {
 
     @BeforeEach
     public void init() {
-        game = new Game();
+        game = new Game(true);
     }
 
     @AfterEach

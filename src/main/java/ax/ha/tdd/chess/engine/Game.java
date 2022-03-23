@@ -100,9 +100,20 @@ public class Game {
         } else {
             Coordinates startPos = new Coordinates(moves[0]);
             Coordinates endPos = new Coordinates(moves[1]);
-
+            if (!isTesting) {
+                if (!board.tileHasPieceOnIt(startPos)) {
+                    lastMove = "Player: " + getPlayerToMove() + "Tried to move " + move + "but there is no piece there";
+                    return;
+                }
+            }
 
             ChessPiece piece = board.getPiece(startPos);
+            if (!isTesting) {
+                if (!Objects.equals(piece.getPlayer(), player)) {
+                    lastMove = "Player: " + getPlayerToMove() + "tried to move enemy piece but that is not allowed";
+                    return;
+                }
+            }
 
             boolean canMove = piece.canMove(board, endPos);
 
@@ -135,7 +146,19 @@ public class Game {
 
         List<Coordinates> possibleMoves = getValidKingMoves();
         if (possibleMoves.contains(endPos)) {
+            if (!isTesting) {
+                if (!board.tileHasPieceOnIt(startPos)) {
+                    lastMove = "Player: " + getPlayerToMove() + "Tried to move " + moves[0] + "-" + moves[1] + "but there is no piece there";
+                    return;
+                }
+            }
             ChessPiece piece = board.getPiece(startPos);
+            if (!isTesting) {
+                if (!Objects.equals(piece.getPlayer(), player)) {
+                    lastMove = "Player: " + getPlayerToMove() + "tried to move enemy piece but that is not allowed";
+                    return;
+                }
+            }
             if (board.tileHasPieceOnIt(endPos)) {
                 piece.takePiece(board, endPos);
                 lastMove = "player: " + getPlayerToMove() + " moved: " + moves[0] + "-" + moves[1];
