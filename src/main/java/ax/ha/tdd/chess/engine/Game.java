@@ -14,6 +14,7 @@ public class Game {
     boolean isNewGame = true;
     GameState gameState = GameState.Playing;
     Player player = Player.WHITE;
+    String lastMove = "";
     Coordinates checkedPlayerKingCoordinates;
     boolean isTesting = false;
     Map<String, Coordinates> rookAndKingCoordinates = new HashMap<>() {
@@ -63,7 +64,7 @@ public class Game {
         if (isNewGame) {
             return "Game hasn't begun";
         }
-        return "Last move was successful (default reply, change this)";
+        return lastMove;
     }
 
     public void move(String move) {
@@ -71,7 +72,6 @@ public class Game {
             gameState = GameState.Playing;
         }
         isNewGame = false;
-        System.out.println("Player tried to perform move: " + move);
         String[] moves = move.split("-");
         if (GameState.Playing == gameState) {
             gameStateIsPlaying(move, moves);
@@ -80,7 +80,7 @@ public class Game {
         }
         if (GameState.CheckMate == gameState) {
             //TODO add player wins
-            System.out.println("White wins");
+            lastMove = "Player: " + getPlayerToMove() + "moved" + move + "and it resulted in checkmate";
         }
 
 
@@ -91,9 +91,10 @@ public class Game {
             //castling
             if (isCastlingLegal(move)) {
                 castleKing(move);
+                lastMove = "player: " + getPlayerToMove() + " moved: " + move;
                 updatePlayer();
             } else {
-                System.out.println("Cannot castle right now");
+                lastMove = "player: " + getPlayerToMove() + "Tried to castle but it is illegal";
             }
 
         } else {
@@ -107,6 +108,7 @@ public class Game {
 
             if (canMove && board.tileHasPieceOnIt(endPos) && !piece.isTakingPieceFriendly(board, endPos)) {
                 piece.takePiece(board, endPos);
+                lastMove = "player: " + getPlayerToMove() + " moved: " + move;
                 updatePlayer();
                 if (isEnemyInCheck(piece)) {
                     gameState = GameState.Check;
@@ -115,13 +117,14 @@ public class Game {
 
             } else if (canMove && !board.tileHasPieceOnIt(endPos)) {
                 piece.movePiece(board, endPos);
+                lastMove = "player: " + getPlayerToMove() + " moved: " + move;
                 updatePlayer();
                 if (isEnemyInCheck(piece)) {
                     gameState = GameState.Check;
                     getValidKingMoves();
                 }
             } else {
-                System.out.println("invalid move");
+                lastMove = "Player: " + getPlayerToMove() + "tried to move" + move + " But it is illegal";
             }
         }
     }
@@ -135,15 +138,17 @@ public class Game {
             ChessPiece piece = board.getPiece(startPos);
             if (board.tileHasPieceOnIt(endPos)) {
                 piece.takePiece(board, endPos);
+                lastMove = "player: " + getPlayerToMove() + " moved: " + moves[0] + "-" + moves[1];
                 updatePlayer();
                 gameState = GameState.Playing;
             } else if (!board.tileHasPieceOnIt(endPos)) {
                 piece.movePiece(board, endPos);
+                lastMove = "player: " + getPlayerToMove() + " moved: " + moves[0] + "-" + moves[1];
                 updatePlayer();
                 gameState = GameState.Playing;
             }
         } else {
-            System.out.println("invalid move");
+            lastMove = "Player: " + getPlayerToMove() + "tried to move" + moves[0] + "-" + moves[1] + " But it is illegal";
         }
 
     }
@@ -156,7 +161,7 @@ public class Game {
                 king.movePiece(board, castledRookAndKingCoordinates.get(getPlayerToMove().getSymbol() + "KL"));
                 rook.movePiece(board, castledRookAndKingCoordinates.get(getPlayerToMove().getSymbol() + "RL"));
             } else {
-                System.out.println("Cannot castle anymore piece has moved");
+                lastMove = "Player: " + getPlayerToMove() + "tried to move" + move + " But piece has moved";
             }
         }
 
@@ -167,7 +172,7 @@ public class Game {
                 king.movePiece(board, castledRookAndKingCoordinates.get(getPlayerToMove().getSymbol() + "KR"));
                 rook.movePiece(board, castledRookAndKingCoordinates.get(getPlayerToMove().getSymbol() + "RR"));
             } else {
-                System.out.println("Cannot castle anymore piece has moved");
+                lastMove = "Player: " + getPlayerToMove() + "tried to move" + move + " But piece has moved";
             }
         }
     }
