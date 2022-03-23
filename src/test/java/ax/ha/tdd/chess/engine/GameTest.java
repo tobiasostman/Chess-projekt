@@ -19,19 +19,60 @@ public class GameTest {
     @Test
     @DisplayName("should be in playing state")
     public void shouldBeInPlayingState() {
-
+        game.move("d2-d4");
+        Assertions.assertEquals(GameState.Playing, game.gameState);
     }
 
     @Test
-    @DisplayName("should be in check state")
-    public void shouldBeInCheckState() {
-
+    @DisplayName("White should be in check state")
+    public void whiteShouldBeInCheckState() {
+        game.move("d2-d4");
+        game.move("c7-c6");
+        game.move("e2-e3");
+        game.move("d8-a5");
+        Assertions.assertEquals(GameState.Check, game.gameState);
+        game.move("e1-e2");
+        Assertions.assertEquals(GameState.Playing, game.gameState);
+        game.move("a5-d2");
+        Assertions.assertEquals(GameState.Check, game.gameState);
+        game.move("e2-d2");
+        Assertions.assertEquals(GameState.Playing, game.gameState);
     }
 
     @Test
-    @DisplayName("should be in checkmate state")
-    public void shouldBeInCheckMateState() {
+    @DisplayName("White should be in checkmate state")
+    public void whiteShouldBeInCheckMateState() {
+        game.move("d2-d4");
+        game.move("c7-c6");
+        game.move("a2-a3");
+        game.move("d8-a5");
+        Assertions.assertEquals(GameState.CheckMate, game.gameState);
+    }
 
+    @Test
+    @DisplayName("Black should be in check state")
+    public void blackShouldBeInCheckState() {
+        game.move("c2-c3");
+        game.move("d7-d5");
+        game.move("e2-e3");
+        game.move("e7-e6");
+        game.move("d1-a4");
+        Assertions.assertEquals(GameState.Check, game.gameState);
+        game.move("e8-e7");
+        Assertions.assertEquals(GameState.Playing, game.gameState);
+        game.move("a4-d7");
+        Assertions.assertEquals(GameState.Check, game.gameState);
+        game.move("e7-d7");
+        Assertions.assertEquals(GameState.Playing, game.gameState);
+    }
+
+    @Test
+    @DisplayName("Black should be in checkmate state")
+    public void blackShouldBeInCheckMateState() {
+        game.move("c2-c3");
+        game.move("d7-d5");
+        game.move("d1-a4");
+        Assertions.assertEquals(GameState.CheckMate, game.gameState);
     }
 
     @Test

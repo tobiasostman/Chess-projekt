@@ -55,6 +55,9 @@ public class Queen extends ChessPiece {
     }
 
     private boolean movementLoop(Chessboard chessboard, boolean isXMovement, int startPos, int endPos) {
+        if (startPos == endPos) {
+            return true;
+        }
         if (startPos > endPos) {
             for (int i = startPos - 1; i != endPos; i--) {
                 if (isXMovement) {

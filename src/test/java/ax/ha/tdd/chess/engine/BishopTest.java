@@ -9,7 +9,7 @@ public class BishopTest {
 
     @BeforeEach
     public void init() {
-        game = new Game();
+        game = new Game(true);
         game.board.removePiece(game.board.getPiece(new Coordinates("d2")));
         game.board.removePiece(game.board.getPiece(new Coordinates("b2")));
         game.board.removePiece(game.board.getPiece(new Coordinates("e2")));

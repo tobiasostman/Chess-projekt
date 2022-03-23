@@ -67,15 +67,18 @@ public class Game {
     }
 
     public void move(String move) {
-        //TODO this should trigger your move logic.
+        if (isTesting) {
+            gameState = GameState.Playing;
+        }
         isNewGame = false;
         System.out.println("Player tried to perform move: " + move);
         String[] moves = move.split("-");
         if (GameState.Playing == gameState) {
             gameStateIsPlaying(move, moves);
         } else if (GameState.Check == gameState) {
-
-        } else {
+            gameStateIsCheck(moves);
+        }
+        if (GameState.CheckMate == gameState) {
             //TODO add player wins
             System.out.println("White wins");
         }
@@ -105,16 +108,43 @@ public class Game {
             if (canMove && board.tileHasPieceOnIt(endPos) && !piece.isTakingPieceFriendly(board, endPos)) {
                 piece.takePiece(board, endPos);
                 updatePlayer();
+                if (isEnemyInCheck(piece)) {
+                    gameState = GameState.Check;
+                    getValidKingMoves();
+                }
+
             } else if (canMove && !board.tileHasPieceOnIt(endPos)) {
                 piece.movePiece(board, endPos);
                 updatePlayer();
+                if (isEnemyInCheck(piece)) {
+                    gameState = GameState.Check;
+                    getValidKingMoves();
+                }
             } else {
                 System.out.println("invalid move");
             }
         }
     }
 
-    private void gameStateIsCheck() {
+    private void gameStateIsCheck(String[] moves) {
+        Coordinates startPos = new Coordinates(moves[0]);
+        Coordinates endPos = new Coordinates(moves[1]);
+
+        List<Coordinates> possibleMoves = getValidKingMoves();
+        if (possibleMoves.contains(endPos)) {
+            ChessPiece piece = board.getPiece(startPos);
+            if (board.tileHasPieceOnIt(endPos)) {
+                piece.takePiece(board, endPos);
+                updatePlayer();
+                gameState = GameState.Playing;
+            } else if (!board.tileHasPieceOnIt(endPos)) {
+                piece.movePiece(board, endPos);
+                updatePlayer();
+                gameState = GameState.Playing;
+            }
+        } else {
+            System.out.println("invalid move");
+        }
 
     }
 
@@ -244,7 +274,8 @@ public class Game {
             for (int y = 0; y != 8; y++) {
                 Coordinates coordinates = new Coordinates(x, y);
                 if (board.tileHasPieceOnIt(coordinates)) {
-                    if (board.getPiece(coordinates).getPieceType() == PieceType.KING && board.getPiece(coordinates).getPlayer() != player) {
+                    if (board.getPiece(coordinates).getPieceType() == PieceType.KING &&
+                            Objects.equals(player, board.getPiece(coordinates).getPlayer())) {
                         kingCoords = coordinates;
                         break;
                     }
@@ -254,7 +285,6 @@ public class Game {
 
         if (piece.canMove(board, kingCoords)) {
             checkedPlayerKingCoordinates = kingCoords;
-
             return true;
         }
         for (int x = 0; x != 8; x++) {
@@ -262,7 +292,8 @@ public class Game {
                 Coordinates coordinates = new Coordinates(x, y);
                 if (board.tileHasPieceOnIt(coordinates)) {
                     ChessPiece chessPiece = board.getPiece(coordinates);
-                    if (chessPiece.canMove(board, kingCoords)) {
+                    if (chessPiece.canMove(board, kingCoords) &&
+                            !Objects.equals(chessPiece.getPlayer(), player)) {
                         checkedPlayerKingCoordinates = kingCoords;
                         return true;
                     }
@@ -272,15 +303,40 @@ public class Game {
         return false;
     }
 
-    private void getValidKingMoves() {
+    private List<Coordinates> getValidKingMoves() {
         King king = (King) board.getPiece(checkedPlayerKingCoordinates);
+        int kingYPos = king.getLocation().getY();
+        int kingXPos = king.getLocation().getX();
+        List<Coordinates> kingMoves = new ArrayList<>();
+        if (kingXPos + 1 < 7) kingMoves.add(new Coordinates(kingXPos + 1, kingYPos));
+        if (kingXPos - 1 > 0) kingMoves.add(new Coordinates(kingXPos - 1, kingYPos));
+        if (kingYPos + 1 < 7) kingMoves.add(new Coordinates(kingXPos, kingYPos + 1));
+        if (kingYPos - 1 > 0) kingMoves.add(new Coordinates(kingXPos, kingYPos - 1));
+        if (kingXPos + 1 < 7 && kingYPos + 1 < 7) kingMoves.add(new Coordinates(kingXPos + 1, kingYPos + 1));
+        if (kingXPos + 1 < 7 && kingYPos - 1 > 0) kingMoves.add(new Coordinates(kingXPos + 1, kingYPos - 1));
+        if (kingXPos - 1 > 0 && kingYPos + 1 < 7) kingMoves.add(new Coordinates(kingXPos - 1, kingYPos + 1));
+        if (kingXPos - 1 > 0 && kingYPos - 1 > 0) kingMoves.add(new Coordinates(kingXPos - 1, kingYPos - 1));
 
+        kingMoves.removeIf(possibleMove -> canAnyPieceMoveHere(getPlayerToMove(), possibleMove));
+        kingMoves.removeIf(possibleMove -> {
+            if (board.tileHasPieceOnIt(possibleMove)) {
+                if (board.getPiece(possibleMove).getPlayer() == king.getPlayer()) {
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        if (kingMoves.isEmpty()) {
+            gameState = GameState.CheckMate;
+        }
+        return kingMoves;
     }
 
     private void updatePlayer() {
         if (Player.WHITE == player) {
             player = Player.BLACK;
-        } else {
+        } else if (Player.BLACK == player) {
             player = Player.WHITE;
         }
     }

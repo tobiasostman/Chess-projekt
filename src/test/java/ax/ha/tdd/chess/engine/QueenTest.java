@@ -8,7 +8,7 @@ public class QueenTest {
 
     @BeforeEach
     public void init() {
-        game = new Game();
+        game = new Game(true);
     }
 
     @AfterEach
